@@ -68,7 +68,8 @@ async function loadPermitsFromDHA() {
     return getFallbackPermits();
   }
 
-  console.log('🌐 PRODUCTION MODE: Connecting to real DHA APIs...');\n  console.log('🔐 PKI Public Key:', config.document.pkiPublicKey ? '✅ CONFIGURED' : '⚠️  NOT SET');
+  console.log('🌐 PRODUCTION MODE: Connecting to real DHA APIs...');
+  console.log('🔐 PKI Public Key:', config.document.pkiPublicKey ? 'CONFIGURED' : 'NOT SET');
 
   const permitSources = [
     { type: 'Permanent Residence', endpoint: config.endpoints.npr, apiKey: config.dha.nprApiKey },
