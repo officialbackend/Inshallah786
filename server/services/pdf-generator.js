@@ -299,68 +299,90 @@ async function generatePermanentResidencePDF(doc, permit) {
 
   y += 50;
 
-  // Office stamp box (positioned higher and to the right)
+  // Office stamp box (positioned to match official format)
   const stampY = y - 35;
   const stampX = 310;
   
-  // Background pattern for stamp
+  // Background security pattern (more visible)
   doc.save();
-  doc.opacity(0.05);
+  doc.opacity(0.08);
   // Diagonal lines pattern
-  for (let i = 0; i < 15; i++) {
-    doc.moveTo(stampX + (i * 15), stampY)
-       .lineTo(stampX + (i * 15) + 100, stampY + 100)
+  for (let i = 0; i < 20; i++) {
+    doc.moveTo(stampX + (i * 12), stampY)
+       .lineTo(stampX + (i * 12) + 100, stampY + 100)
        .stroke('#CC0000');
   }
   doc.restore();
   
-  // Light background fill
+  // Light red background fill
   doc.save();
-  doc.opacity(0.03);
+  doc.opacity(0.05);
   doc.rect(stampX, stampY, 225, 100).fill('#FFE6E6');
   doc.restore();
   
-  // Double border
-  doc.rect(stampX, stampY, 225, 100).stroke('#CC0000');
-  doc.rect(stampX + 1, stampY + 1, 223, 98).stroke('#CC0000');
+  // Double red border - exact match
+  doc.strokeColor('#CC0000').lineWidth(1.5);
+  doc.rect(stampX, stampY, 225, 100).stroke();
+  doc.rect(stampX + 2, stampY + 2, 221, 96).stroke();
   
-  // Coat of arms at top of stamp
+  // Coat of arms at top center of stamp (CRITICAL)
   if (imageExists(coatOfArmsPath)) {
     try {
-      doc.image(coatOfArmsPath, stampX + 85, stampY + 8, { width: 50, height: 50 });
+      doc.image(coatOfArmsPath, stampX + 87, stampY + 5, { width: 50, height: 50 });
     } catch (error) {
-      // Continue without coat of arms
+      // Fallback: Draw placeholder
+      doc.fontSize(8).fillColor('#CC0000').text('🇿🇦', stampX + 100, stampY + 20);
     }
   }
   
+  // "Office stamp" text - centered below coat of arms
   doc.fontSize(7)
      .font('Helvetica-Oblique')
      .fillColor('#CC0000')
-     .text('Office stamp', stampX + 82, stampY + 62);
+     .text('Office stamp', stampX + 85, stampY + 58, { width: 60, align: 'center' });
   
+  // DEPARTMENT OF HOME AFFAIRS - centered
   doc.fontSize(9)
      .font('Helvetica-Bold')
      .fillColor('#CC0000')
-     .text('DEPARTMENT OF HOME AFFAIRS', stampX + 30, stampY + 72);
+     .text('DEPARTMENT OF HOME AFFAIRS', stampX + 20, stampY + 70, { width: 185, align: 'center' });
   
+  // PRIVATE BAG X114 - centered
   doc.fontSize(8)
      .font('Helvetica-Bold')
-     .text('PRIVATE BAG X114', stampX + 65, stampY + 84);
+     .text('PRIVATE BAG X114', stampX + 20, stampY + 82, { width: 185, align: 'center' });
   
+  // Location name - centered and bold
   y += 5;
-  doc.fontSize(8)
+  doc.fontSize(9)
      .font('Helvetica-Bold')
      .fillColor('#CC0000')
-     .text('Makhosini', stampX + 75, stampY + 94);
+     .text('Makhosini CBT', stampX + 20, stampY + 92, { width: 185, align: 'center' });
   
-  doc.fontSize(6)
+  // PRETORIA  0001 - small text at bottom
+  doc.fontSize(7)
      .font('Helvetica')
      .fillColor('#CC0000')
-     .text('PRETORIA  0001', stampX + 73, stampY + 103);
+     .text('PRETORIA  0001', stampX + 20, stampY + 104, { width: 185, align: 'center' });
+  
+  // Add small "07" reference number in bottom right
+  doc.fontSize(10)
+     .font('Helvetica-Bold')
+     .fillColor('#CC0000')
+     .text('07', stampX + 200, stampY + 85);
 
-  // Signature section (left side)
+  // Signature section (left side) - matches official layout
   const sigY = y + 45;
-  doc.moveTo(leftCol, sigY).lineTo(leftCol + 200, sigY).stroke('#000000');
+  
+  // Signature line
+  doc.strokeColor('#000000').lineWidth(1);
+  doc.moveTo(leftCol, sigY).lineTo(leftCol + 200, sigY).stroke();
+  
+  // Add actual signature appearance (handwritten style)
+  doc.fontSize(16)
+     .font('Times-Italic')
+     .fillColor('#000000')
+     .text('Makhode', leftCol + 5, sigY - 18);
   
   doc.fontSize(8)
      .font('Helvetica-Bold')
@@ -371,16 +393,19 @@ async function generatePermanentResidencePDF(doc, permit) {
      .font('Helvetica')
      .text('DEPARTMENT OF HOME AFFAIRS', leftCol, sigY + 23);
 
-  // Name and initials (right side, aligned with stamp)
-  doc.fontSize(10)
+  // Name and initials section (right side, aligned with stamp)
+  doc.fontSize(11)
      .font('Helvetica-Bold')
      .fillColor('#000000')
-     .text('Makhode LT', stampX + 70, sigY - 20);
+     .text('Makhode LT', stampX + 65, sigY - 22);
   
-  doc.fontSize(8)
+  // Underline for signature
+  doc.moveTo(stampX + 50, sigY).lineTo(stampX + 175, sigY).stroke('#000000');
+  
+  doc.fontSize(7)
      .font('Helvetica-Oblique')
      .fillColor('#666666')
-     .text('Surname and Initials', stampX + 65, sigY + 5);
+     .text('Surname and Initials', stampX + 63, sigY + 5);
 
   y += 90;
 
