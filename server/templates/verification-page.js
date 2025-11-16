@@ -7,8 +7,8 @@ export function generateVerificationPage(permit) {
   
   // Determine validity status
   let validityStatus = 'VALID';
-  let validityColor = '#006600';
-  let validityBg = '#d4f1d4';
+  let validityColor = '#007a3d';
+  let validityBg = '#e8f5e9';
   
   if (permit.expiryDate && permit.expiryDate !== 'Indefinite' && permit.expiryDate !== 'Permanent') {
     const expiryDate = new Date(permit.expiryDate);
@@ -56,8 +56,8 @@ export function generateVerificationPage(permit) {
         
         .dha-header {
             background: white;
-            padding: 30px 40px;
-            border-bottom: 4px solid #006600;
+            padding: 25px 40px;
+            border-bottom: 3px solid #007a3d;
             position: relative;
         }
         
@@ -65,23 +65,25 @@ export function generateVerificationPage(permit) {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .dha-title {
-            color: #006600;
-            font-size: 28px;
-            font-weight: bold;
-            text-transform: lowercase;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #007a3d;
+            font-size: 26px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+            letter-spacing: 0.5px;
         }
         
         .dha-subtitle {
             color: #333;
-            font-size: 11px;
+            font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             margin-top: 5px;
+            font-weight: 500;
         }
         
         .sa-coat-of-arms {
@@ -135,12 +137,13 @@ export function generateVerificationPage(permit) {
         
         .status-icon {
             display: inline-block;
-            width: 60px;
-            height: 60px;
-            background: ${validityStatus === 'VALID' ? '#006600' : '#cc0000'};
+            width: 70px;
+            height: 70px;
+            background: ${validityStatus === 'VALID' ? '#007a3d' : '#d32f2f'};
             border-radius: 50%;
             margin: 20px auto;
             position: relative;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
         }
         
         .status-icon::after {
@@ -160,29 +163,31 @@ export function generateVerificationPage(permit) {
         }
         
         .official-notice {
-            background: #fffbf0;
-            border-left: 4px solid #FFD700;
-            padding: 20px;
-            margin: 20px 0;
-            font-size: 13px;
-            color: #333;
-            line-height: 1.6;
+            background: #fff8e1;
+            border-left: 5px solid #ffa000;
+            padding: 20px 25px;
+            margin: 25px 0;
+            font-size: 14px;
+            color: #212529;
+            line-height: 1.7;
+            border-radius: 4px;
         }
         
         .section {
-            margin-bottom: 25px;
-            padding: 15px;
-            background: #fafafa;
-            border-left: 3px solid #006600;
+            margin-bottom: 20px;
+            padding: 18px;
+            background: #f8f9fa;
+            border-left: 4px solid #007a3d;
+            border-radius: 4px;
         }
         
         .section-label {
             font-size: 11px;
-            color: #006600;
+            color: #007a3d;
             text-transform: uppercase;
-            letter-spacing: 1.2px;
+            letter-spacing: 1px;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         
         .permit-type {
@@ -197,32 +202,34 @@ export function generateVerificationPage(permit) {
         }
         
         .permit-number {
-            font-size: 32px;
-            font-weight: 800;
-            color: #006600;
+            font-size: 28px;
+            font-weight: 700;
+            color: #007a3d;
+            letter-spacing: 1px;
         }
         
         .field-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #000;
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
         }
         
         .qr-section {
-            background: #f8f9fa;
-            border: 4px solid #006600;
-            border-radius: 12px;
+            background: white;
+            border: 3px solid #007a3d;
+            border-radius: 8px;
             padding: 30px;
             text-align: center;
             margin: 30px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .qr-section img {
-            width: 250px;
-            height: 250px;
-            border: 2px solid #006600;
-            border-radius: 8px;
-            padding: 10px;
+            width: 220px;
+            height: 220px;
+            border: 2px solid #007a3d;
+            border-radius: 4px;
+            padding: 15px;
             background: white;
         }
         
@@ -326,12 +333,12 @@ export function generateVerificationPage(permit) {
         <div class="dha-header">
             <div class="dha-logo-section">
                 <div>
-                    <div class="dha-title">home affairs</div>
-                    <div class="dha-subtitle">Department of Home Affairs</div>
+                    <div class="dha-title">Department of Home Affairs</div>
+                    <div class="dha-subtitle">Republic of South Africa</div>
                 </div>
                 <div class="sa-coat-of-arms"></div>
             </div>
-            <div class="rsa-text">REPUBLIC OF SOUTH AFRICA</div>
+            <div class="rsa-text">OFFICIAL DOCUMENT VERIFICATION</div>
         </div>
         
         <div class="header">
@@ -424,46 +431,46 @@ export function generateVerificationPage(permit) {
                 </a>
             </div>
             
-            <div style="background: #f9f9f9; padding: 30px; margin-top: 40px; border-top: 3px solid #006600;">
-                <h3 style="color: #006600; font-size: 16px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">
-                    📋 OFFICIAL VERIFICATION STATUS
+            <div style="background: #f5f5f5; padding: 35px; margin-top: 40px; border-top: 4px solid #007a3d;">
+                <h3 style="color: #007a3d; font-size: 16px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700;">
+                    Official Verification Status
                 </h3>
-                <div style="background: ${colors.bg}; border: 2px solid ${colors.border}; padding: 20px; border-radius: 8px;">
-                    <div style="font-size: 18px; font-weight: 700; color: ${colors.text}; margin-bottom: 10px;">
-                        ✓ DOCUMENT VERIFIED BY DEPARTMENT OF HOME AFFAIRS
+                <div style="background: ${colors.bg}; border: 3px solid ${colors.border}; padding: 25px; border-radius: 6px;">
+                    <div style="font-size: 18px; font-weight: 700; color: ${colors.text}; margin-bottom: 12px;">
+                        ✓ VERIFIED BY DEPARTMENT OF HOME AFFAIRS
                     </div>
-                    <div style="font-size: 14px; color: #333; line-height: 1.6;">
-                        This ${permit.type} has been verified against official DHA records.<br>
-                        <strong>Verification Date:</strong> ${new Date().toLocaleDateString('en-ZA')}<br>
+                    <div style="font-size: 14px; color: #212529; line-height: 1.8;">
+                        This ${permit.type} has been authenticated against official DHA records.<br>
+                        <strong>Verification Date:</strong> ${new Date().toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' })}<br>
                         <strong>Status:</strong> ${validityStatus}<br>
-                        <strong>Database:</strong> National Population Register (NPR)
+                        <strong>System:</strong> National Population Register (NPR)
                     </div>
                 </div>
                 
-                <div style="margin-top: 30px; padding: 20px; background: white; border: 1px solid #ddd;">
-                    <h4 style="color: #006600; font-size: 14px; margin-bottom: 10px;">📞 OFFICIAL DHA VERIFICATION CONTACTS</h4>
-                    <p style="font-size: 13px; color: #555; line-height: 1.8;">
-                        <strong>Email:</strong> asmverifications@dha.gov.za<br>
-                        <strong>Website:</strong> www.dha.gov.za<br>
+                <div style="margin-top: 30px; padding: 25px; background: white; border: 2px solid #007a3d; border-radius: 6px;">
+                    <h4 style="color: #007a3d; font-size: 15px; margin-bottom: 15px; font-weight: 700;">Official Contact Information</h4>
+                    <p style="font-size: 14px; color: #212529; line-height: 2;">
+                        <strong>Email:</strong> <a href="mailto:callcentre@dha.gov.za" style="color: #007a3d; text-decoration: none;">callcentre@dha.gov.za</a><br>
+                        <strong>Website:</strong> <a href="https://www.dha.gov.za" target="_blank" style="color: #007a3d; text-decoration: none;">www.dha.gov.za</a><br>
                         <strong>Contact Centre:</strong> 0800 60 11 90<br>
-                        <strong>Office Hours:</strong> Monday - Friday, 08:00 - 16:00
+                        <strong>Office Hours:</strong> Monday - Friday, 08:00 - 16:00 (SAST)
                     </p>
                 </div>
                 
-                <div style="margin-top: 20px; text-align: center; padding: 15px; background: #fffbf0; border: 1px solid #FFD700;">
-                    <p style="font-size: 11px; color: #666; line-height: 1.5;">
-                        <strong>DISCLAIMER:</strong> This verification page is generated by the Department of Home Affairs automated verification system. 
-                        For official inquiries or disputes, please contact DHA directly using the contact details above.
-                        This document is protected by the laws of the Republic of South Africa.
+                <div style="margin-top: 25px; text-align: center; padding: 18px; background: #fff3e0; border: 2px solid #ffa000; border-radius: 4px;">
+                    <p style="font-size: 12px; color: #424242; line-height: 1.6;">
+                        <strong>IMPORTANT NOTICE:</strong> This verification page is generated by the Department of Home Affairs Document Management System. 
+                        For official inquiries, disputes, or additional verification, please contact the DHA directly using the contact information provided above.
+                        All information is protected under the laws of the Republic of South Africa.
                     </p>
                 </div>
             </div>
         </div>
     </div>
     
-    <div style="text-align: center; padding: 20px; color: #666; font-size: 11px;">
-        <p>© ${new Date().getFullYear()} Department of Home Affairs, Republic of South Africa</p>
-        <p style="margin-top: 5px;">All Rights Reserved | Protected by South African Law</p>
+    <div style="text-align: center; padding: 25px; color: #757575; font-size: 12px; background: #f5f5f5; border-top: 1px solid #e0e0e0;">
+        <p style="font-weight: 600;">© ${new Date().getFullYear()} Department of Home Affairs, Republic of South Africa</p>
+        <p style="margin-top: 8px; font-size: 11px;">All Rights Reserved | Protected under South African Law</p>
     </div>
 </body>
 </html>
