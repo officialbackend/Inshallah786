@@ -173,6 +173,12 @@ app.get('/verify', (req, res) => {
   serveFile(res, 'official-verify.html', ['/opt/render/project/attached_assets/official-verify.html']);
 });
 
+// All Applicants Test Page
+app.get('/test-all-applicants', (req, res) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  serveFile(res, 'all-applicants-test.html', ['/opt/render/project/attached_assets/all-applicants-test.html']);
+});
+
 // Work Permit route
 app.get('/work-permit', (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
