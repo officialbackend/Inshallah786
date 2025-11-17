@@ -1,7 +1,7 @@
 
 import express from 'express';
 import { getAllPermits, findPermitByNumber } from '../services/permit-service.js';
-import { generatePermitPDF } from '../services/pdf-generator.js';
+import { generatePermitPDF } from '../services/document-generator.js';
 import { generateVerificationPage } from '../templates/verification-page.js';
 import QRCode from 'qrcode';
 
