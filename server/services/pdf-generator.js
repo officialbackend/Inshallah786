@@ -9,6 +9,10 @@ import sharp from 'sharp';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const PROJECT_ROOT = path.resolve(__dirname, '../..');
+
+// Coat of Arms - use authentic government image
+const COAT_OF_ARMS_PATH = path.join(PROJECT_ROOT, 'Coat of arms');
 
 // Image path helpers
 const getImagePath = (documentType, imageName) => {
@@ -18,11 +22,43 @@ const getImagePath = (documentType, imageName) => {
 
 const imageExists = (filePath) => {
   try {
-    return fs.existsSync(filePath);
+    return fs.existsSync(filePath) && fs.statSync(filePath).size > 10;
   } catch {
     return false;
   }
 };
+
+// Get optimized coat of arms for PDF use
+async function getCoatOfArms() {
+  try {
+    // First try the authentic government image
+    if (imageExists(COAT_OF_ARMS_PATH)) {
+      const buffer = await sharp(COAT_OF_ARMS_PATH)
+        .resize(200, 200, { fit: 'inside', withoutEnlargement: false })
+        .png({ quality: 100 })
+        .toBuffer();
+      console.log('✅ Using authentic DHA Coat of Arms');
+      return buffer;
+    }
+
+    // Fallback to SVG if available
+    const svgPath = path.join(__dirname, '../../attached_assets/images/coat-of-arms.svg');
+    if (imageExists(svgPath)) {
+      const buffer = await sharp(svgPath)
+        .resize(200, 200, { fit: 'inside' })
+        .png({ quality: 90 })
+        .toBuffer();
+      console.log('✅ Using SVG Coat of Arms');
+      return buffer;
+    }
+
+    console.log('⚠️ No Coat of Arms image available');
+    return null;
+  } catch (error) {
+    console.log('Coat of Arms loading failed:', error.message);
+    return null;
+  }
+}
 
 // Convert SVG to PNG buffer for PDF embedding
 async function getSVGAsBuffer(svgPath) {
@@ -43,6 +79,21 @@ async function getSVGAsBuffer(svgPath) {
 export async function generatePermitPDF(permit) {
   return new Promise(async (resolve, reject) => {
     try {
+      // Check if we should use template-based generation (fallback when API fails)
+      const { hasTemplate, generateTemplateBasedPDF } = await import('./template-document-generator.js');
+      
+      // Use template-based generation if available for this document type
+      if (hasTemplate(permit.type)) {
+        console.log(`📄 Template available for ${permit.type}, using enhanced generation`);
+        try {
+          const templatePDF = await generateTemplateBasedPDF(permit);
+          return resolve(templatePDF);
+        } catch (templateError) {
+          console.log('⚠️ Template generation failed, falling back to standard:', templateError.message);
+          // Continue with standard generation below
+        }
+      }
+
       const doc = new PDFDocument({ 
         size: 'A4',
         margins: { top: 50, bottom: 50, left: 50, right: 50 }
@@ -77,21 +128,16 @@ export async function generatePermitPDF(permit) {
 }
 
 function drawDHAHeader(doc, documentTitle) {
-  // Try to add official coat of arms (SVG will be converted to PNG for PDF embedding)
-  const coatOfArmsSvgPath = path.join(__dirname, '../../attached_assets/images/coat-of-arms.svg');
-  const coatOfArmsPngPath = path.join(__dirname, '../../attached_assets/images/coat-of-arms.png');
-  
-  // Use PNG if it exists, otherwise SVG will be handled by fallback
-  let coatOfArmsPath = imageExists(coatOfArmsPngPath) ? coatOfArmsPngPath : 
-                       (imageExists(coatOfArmsSvgPath) ? coatOfArmsSvgPath : null);
-  
-  if (coatOfArmsPath) {
-    try {
-      doc.image(coatOfArmsPath, 460, 45, { width: 60, height: 60 });
-    } catch (error) {
-      console.log('Could not load coat of arms image:', error.message);
+  // Use authentic coat of arms
+  getCoatOfArms().then(coatBuffer => {
+    if (coatBuffer) {
+      try {
+        doc.image(coatBuffer, 460, 45, { width: 60, height: 60 });
+      } catch (error) {
+        console.log('Could not embed coat of arms:', error.message);
+      }
     }
-  }
+  }).catch(err => console.log('Coat loading error:', err.message));
 
   doc.fillColor('#007a3d')
      .fontSize(22)
@@ -115,13 +161,15 @@ function drawDHAHeader(doc, documentTitle) {
   // Add subtle watermark
   doc.save();
   doc.opacity(0.03);
-  if (coatOfArmsPath) {
-    try {
-      doc.image(coatOfArmsPath, 200, 300, { width: 200, height: 200 });
-    } catch (error) {
-      // Continue without watermark if image fails
+  getCoatOfArms().then(coatBuffer => {
+    if (coatBuffer) {
+      try {
+        doc.image(coatBuffer, 200, 300, { width: 200, height: 200 });
+      } catch (error) {
+        // Continue without watermark if image fails
+      }
     }
-  }
+  }).catch(() => {});
   doc.restore();
 }
 
@@ -129,28 +177,25 @@ async function generatePermanentResidencePDF(doc, permit) {
   // Background - Light beige/cream texture
   doc.rect(0, 0, 595, 842).fill('#F5F3E8');
   
-  // Try SVG first, fallback to PNG
-  const coatOfArmsSvgPath = path.join(__dirname, '../../attached_assets/images/coat-of-arms.svg');
-  const coatOfArmsPngPath = path.join(__dirname, '../../attached_assets/images/coat-of-arms.png');
-  let coatOfArmsPath = imageExists(coatOfArmsSvgPath) ? coatOfArmsSvgPath : coatOfArmsPngPath;
+  // Get authentic coat of arms
+  const coatOfArmsBuffer = await getCoatOfArms();
   
   // Subtle watermark pattern
   doc.save();
   doc.opacity(0.015);
-  if (imageExists(coatOfArmsPath)) {
+  if (coatOfArmsBuffer) {
     try {
-      doc.image(coatOfArmsPath, 220, 350, { width: 180, height: 180 });
+      doc.image(coatOfArmsBuffer, 220, 350, { width: 180, height: 180 });
     } catch (error) {
       console.log('Watermark load failed:', error.message);
-      // Continue without watermark
     }
   }
   doc.restore();
 
   // Header - Official DHA Coat of Arms (top left)
-  if (imageExists(coatOfArmsPath)) {
+  if (coatOfArmsBuffer) {
     try {
-      doc.image(coatOfArmsPath, 50, 40, { width: 70, height: 70 });
+      doc.image(coatOfArmsBuffer, 50, 40, { width: 70, height: 70 });
     } catch (error) {
       console.log('Could not load coat of arms:', error.message);
       // Draw fallback coat of arms
@@ -363,9 +408,9 @@ async function generatePermanentResidencePDF(doc, permit) {
   doc.rect(stampX + 2, stampY + 2, 221, 96).stroke();
   
   // Coat of arms at top center of stamp (CRITICAL)
-  if (imageExists(coatOfArmsPath)) {
+  if (coatOfArmsBuffer) {
     try {
-      doc.image(coatOfArmsPath, stampX + 87, stampY + 5, { width: 50, height: 50 });
+      doc.image(coatOfArmsBuffer, stampX + 87, stampY + 5, { width: 50, height: 50 });
     } catch (error) {
       // Fallback: Draw placeholder
       doc.fontSize(8).fillColor('#CC0000').text('🇿🇦', stampX + 100, stampY + 20);
